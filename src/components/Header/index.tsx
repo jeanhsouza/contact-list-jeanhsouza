@@ -1,5 +1,3 @@
-import logout from "../../assets/img/logout.svg";
-import searchIcon from "../../assets/img/searchIcon.svg";
 import { Container } from "../../styles/container";
 import { InputSearch } from "../InputSearch";
 import { StyledHeader } from "./styles";
@@ -29,14 +27,14 @@ export function Header() {
 							<InputSearch display="none" />
 							<img
 								onClick={openInputModal}
-								src={searchIcon}
+								src={"/assets/img/searchIcon.svg"}
 								alt=""
 								className="searchIcon"
 							/>
 							<div onClick={openModal} className="cartIconBox">
 								Adicionar
 							</div>
-							<img onClick={Logout} src={logout} alt="" className="logout" />
+							<img onClick={Logout} src={"/assets/img/logout.svg"} alt="" className="logout" />
 						</nav>
 					</>
 				)}

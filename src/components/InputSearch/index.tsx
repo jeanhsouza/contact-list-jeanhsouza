@@ -1,6 +1,5 @@
 import { Button } from "../Button";
 import { StyledInputSearch } from "./styles";
-import searchIcon2 from "../../assets/img/searchIcon2.svg";
 import { DashContext } from "../../context/DashContext";
 import { useContext } from "react";
 
@@ -16,7 +15,7 @@ export function InputSearch({ display }: { display: string }) {
 				{...register("inputSearchValue")}
 			/>
 			<Button buttonSize="default" buttonStyle="brand1">
-				<img src={searchIcon2} alt="searchIcon2" />
+				<img src={"/assets/img/searchIcon2.svg"} alt="searchIcon2" />
 			</Button>
 		</StyledInputSearch>
 	);
