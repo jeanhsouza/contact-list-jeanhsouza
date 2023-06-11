@@ -4,7 +4,7 @@ import { DashContext } from "../../../context/DashContext";
 import { Button } from "../../Button";
 
 export function RemoveContactModal() {
-	const { deleteContact, closeModal } = useContext(DashContext);
+	const { deleteContact, closeModal, loading } = useContext(DashContext);
 
 	return (
 		<StyledRemoveContactModal>
@@ -19,7 +19,7 @@ export function RemoveContactModal() {
 				buttonSize="medium"
 				buttonStyle="solid2"
 			>
-				Remover Contato
+				{loading? "Removendo..." : "Remover Contato"}
 			</Button>
 		</StyledRemoveContactModal>
 	);

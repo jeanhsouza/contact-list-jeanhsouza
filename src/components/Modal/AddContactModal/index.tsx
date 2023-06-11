@@ -5,7 +5,6 @@ import { Input } from "../../Input";
 import { StyledAddContactModal } from "./style";
 import { useForm } from "react-hook-form";
 import { useContext } from "react";
-import { AuthContext } from "../../../context/AuthContext";
 import { addModalSchema } from "./addModalSchema";
 import { DashContext } from "../../../context/DashContext";
 
@@ -16,8 +15,7 @@ export interface iAddModalFormData {
 }
 
 export function AddContactModal(){
-    const { loading } = useContext(AuthContext);
-	const { closeModal, addContact } = useContext(DashContext);
+	const { closeModal, addContact, loading } = useContext(DashContext);
 
     const {
 		register,

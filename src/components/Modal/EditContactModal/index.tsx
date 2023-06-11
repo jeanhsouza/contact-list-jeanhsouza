@@ -5,7 +5,6 @@ import { Input } from "../../Input";
 import { StyledEditContactModal } from "./style";
 import { useForm } from "react-hook-form";
 import { useContext, useEffect } from "react";
-import { AuthContext } from "../../../context/AuthContext";
 import { editModalSchema } from "./editModalSchema";
 import { DashContext } from "../../../context/DashContext";
 
@@ -16,8 +15,7 @@ export interface iEditModalFormData {
 }
 
 export function EditContactModal() {
-	const { loading } = useContext(AuthContext);
-	const { closeModal, filter, isEdit, editContact } = useContext(DashContext);
+	const { closeModal, loading, filter, isEdit, editContact } = useContext(DashContext);
 
 	const {
 		register,
@@ -34,7 +32,7 @@ export function EditContactModal() {
         setValue("name",contactFound?.name);
         setValue("email",contactFound?.email);
         setValue("fone",contactFound?.fone);
-	}, []);
+	}, [filter, isEdit, setValue]);
 
 	return (
 		<StyledEditContactModal>
