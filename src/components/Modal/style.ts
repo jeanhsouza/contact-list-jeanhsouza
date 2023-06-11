@@ -9,5 +9,6 @@ export const StyledModal = styled.div`
 	background-color: rgba(0, 0, 0, 0.5);
 
 	display: flex;
-	justify-content: flex-end;
+	justify-content: center;
+	align-items: center;
 `;

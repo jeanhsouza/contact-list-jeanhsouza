@@ -1,10 +1,11 @@
 import { Button } from "../../Button";
 import { StyledLi } from "./styles";
 import "react-toastify/dist/ReactToastify.css";
-import { iProductItems } from "../../../context/DashContext";
+import { DashContext, iProductItems } from "../../../context/DashContext";
+import { useContext } from "react";
 
 export function Product({ elem }: { elem: iProductItems }) {
-	// const { addCart } = useContext(DashContext);
+	const { openModal } = useContext(DashContext);
 
 	return (
 		<StyledLi>
@@ -16,14 +17,14 @@ export function Product({ elem }: { elem: iProductItems }) {
 					<Button
 						buttonSize="medium"
 						buttonStyle="solid2"
-						click={()=>0}
+						click={()=>openModal("Edit",elem.id)}
 					>
 						Editar
 					</Button>
 					<Button
 						buttonSize="medium"
 						buttonStyle="solid2"
-						click={()=>0}
+						click={()=>openModal("Remove",elem.id)}
 					>
 						Remover
 					</Button>

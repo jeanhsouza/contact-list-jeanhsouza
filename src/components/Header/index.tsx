@@ -4,6 +4,7 @@ import { StyledHeader } from "./styles";
 import { useContext } from "react";
 import { DashContext } from "../../context/DashContext";
 import { AuthContext } from "../../context/AuthContext";
+import { Button } from "../Button";
 
 export function Header() {
 	const { openModal, inputModal, openInputModal, closeInputModal } =
@@ -31,10 +32,19 @@ export function Header() {
 								alt=""
 								className="searchIcon"
 							/>
-							<div onClick={openModal} className="cartIconBox">
+							{/* <div onClick={() => openModal("Add")} className="cartIconBox">
 								Adicionar
-							</div>
-							<img onClick={Logout} src={"/assets/img/logout.svg"} alt="" className="logout" />
+							</div> */}
+							<Button click={() => openModal("Add")} type="submit" buttonSize="medium" buttonStyle="brand1">
+								Adicionar Contato
+							</Button>
+
+							<img
+								onClick={Logout}
+								src={"/assets/img/logout.svg"}
+								alt=""
+								className="logout"
+							/>
 						</nav>
 					</>
 				)}

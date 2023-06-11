@@ -16,6 +16,7 @@ interface iAuthContextValue {
 	submitLogin: SubmitHandler<iLoginFormData>;
 	submitRegister: SubmitHandler<iRegisterFormData>;
 	Logout: () => void;
+	setLoading: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export const AuthContext = createContext({} as iAuthContextValue);
@@ -98,7 +99,7 @@ export function AuthProvider({ children }: iAuthContextProps) {
 
 	return (
 		<AuthContext.Provider
-			value={{ loading, RegisterLink, submitLogin, submitRegister, Logout }}
+			value={{ loading, setLoading, RegisterLink, submitLogin, submitRegister, Logout }}
 		>
 			{children}
 		</AuthContext.Provider>

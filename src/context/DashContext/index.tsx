@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import {
 	SubmitHandler,
@@ -8,17 +8,27 @@ import {
 import { api } from "../../services/api";
 // import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
+import { AuthContext } from "../AuthContext";
+import { iAddModalFormData } from "../../components/Modal/AddContactModal";
+import { iEditModalFormData } from "../../components/Modal/EditContactModal";
 
 interface iDashContextValues {
 	product: iProductItems[];
 	isOpen: boolean;
+	isAdd: boolean;
+	isEdit: number;
+	isRemove: number;
 	profile: iProductItems;
 	filter: iProductItems[];
 	inputValue: string;
 	inputModal: boolean;
 	screen: number;
-	openModal: () => void;
+	openModal: (typeModal: string, idCard?: number | undefined) => void;
 	closeModal: () => void;
+	addContact: (data: iAddModalFormData) => void;
+	editContact: (data: iEditModalFormData) => void;
+	deleteContact: () => void;
 	filterProduct: SubmitHandler<iInputSearchFormData>;
 	clearSearch: () => void;
 	openInputModal: () => void;
@@ -44,7 +54,7 @@ export interface iProductItems {
 	id: number;
 	name: string;
 	email: string;
-	fone: number;
+	fone: string;
 }
 
 export interface iInputSearchFormData {
@@ -56,6 +66,9 @@ export const DashContext = createContext({} as iDashContextValues);
 export function DashProvider({ children }: iDashContextProps) {
 	const [product, setProduct] = useState<iProductItems[]>([]);
 	const [isOpen, setIsOpen] = useState(false);
+	const [isAdd, setIsAdd] = useState(false);
+	const [isEdit, setIsEdit] = useState(0);
+	const [isRemove, setIsRemove] = useState(0);
 	const [profile, setProfile] = useState<any>(null);
 	const [filter, setFilter] = useState<iProductItems[]>([]);
 	const [inputValue, setInputValue] = useState("");
@@ -63,40 +76,42 @@ export function DashProvider({ children }: iDashContextProps) {
 	const [screen, setscreen] = useState(900);
 	const navigate = useNavigate();
 	const { register, handleSubmit, reset } = useForm<iInputSearchFormData>();
+	// const { setLoading } = useContext(AuthContext)
+
+	async function requestAPI() {
+		const token = localStorage.getItem("@contactList:token");
+		try {
+			if (token) {
+				const request = await api.get("contacts", {
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
+				});
+
+				const requestUser = await api.get("users/profile", {
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
+				});
+
+				const response = request.data;
+
+				const responseUser = requestUser.data;
+
+				setProfile(responseUser);
+				setProduct(response);
+				setFilter(response);
+			}
+		} catch (error) {
+			console.log(error);
+			localStorage.clear();
+			navigate("/login");
+		}
+	}
 
 	useEffect(() => {
-		async function requestAPI() {
-			const token = localStorage.getItem("@contactList:token");
-			try {
-				if (token) {
-					const request = await api.get("contacts", {
-						headers: {
-							Authorization: `Bearer ${token}`,
-						},
-					});
-
-					const requestUser = await api.get("users/profile", {
-						headers: {
-							Authorization: `Bearer ${token}`,
-						},
-					})					
-
-					const response = request.data;
-
-					const responseUser = requestUser.data;
-
-					setProfile(responseUser)
-					setProduct(response);
-					setFilter(response);
-				}
-			} catch (error) {
-				console.log(error);
-				localStorage.clear();
-				navigate("/login");
-			}
-		}
 		requestAPI();
-	}, [navigate]);
+	}, []);
 
 	// useEffect(() => {
 	// 	if (cart.length > 0) {
@@ -116,12 +131,98 @@ export function DashProvider({ children }: iDashContextProps) {
 		}
 	}, [screen]);
 
-	function openModal() {
+	function openModal(typeModal: string, idCard: number | undefined) {
 		setIsOpen(true);
+
+		if (typeModal === "Add") {
+			setIsAdd(true);
+			setIsEdit(0);
+			setIsRemove(0);
+		}
+
+		if (!idCard) {
+			return;
+		}
+
+		if (typeModal === "Edit") {
+			setIsAdd(false);
+			setIsRemove(0);
+			setIsEdit(idCard);
+		} else {
+			setIsAdd(false);
+			setIsEdit(0);
+			setIsRemove(idCard);
+		}
 	}
 
 	function closeModal() {
 		setIsOpen(false);
+	}
+
+	async function addContact(data: iAddModalFormData, ) {
+		const token = localStorage.getItem("@contactList:token");
+		try {
+			// setLoading(true);
+			await api.post("contacts/", data, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
+			toast.success("Contato criado com sucesso!", {
+				position: toast.POSITION.TOP_RIGHT,
+			});
+			requestAPI();
+			closeModal()
+		} catch (error) {
+			toast.error("Ops! Algo deu errado", {
+				position: toast.POSITION.TOP_RIGHT,
+			});
+			console.log(error);
+		} 
+	}
+
+	async function editContact(data: iEditModalFormData, ) {
+		const token = localStorage.getItem("@contactList:token");
+		try {
+			// setLoading(true);
+			await api.patch(`contacts/${isEdit}`, data, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
+			toast.success("Contato editado com sucesso!", {
+				position: toast.POSITION.TOP_RIGHT,
+			});
+			requestAPI();
+			closeModal()
+		} catch (error) {
+			toast.error("Ops! Algo deu errado", {
+				position: toast.POSITION.TOP_RIGHT,
+			});
+			console.log(error);
+		} 
+	}
+
+	async function deleteContact() {
+		const token = localStorage.getItem("@contactList:token");
+		try {
+			// setLoading(true);
+			await api.delete(`contacts/${isRemove}`, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
+			toast.success("Contato deletado com sucesso!", {
+				position: toast.POSITION.TOP_RIGHT,
+			});
+			requestAPI();
+			closeModal()
+		} catch (error) {
+			toast.error("Ops! Algo deu errado", {
+				position: toast.POSITION.TOP_RIGHT,
+			});
+			console.log(error);
+		} 
 	}
 
 	// function addCart(item: iProductItems) {
@@ -155,7 +256,7 @@ export function DashProvider({ children }: iDashContextProps) {
 	// 	});
 
 	// 	setCart(cardFilter);
-	// }	
+	// }
 
 	const filterProduct: SubmitHandler<iInputSearchFormData> = (data) => {
 		const searchValue = data.inputSearchValue;
@@ -163,9 +264,7 @@ export function DashProvider({ children }: iDashContextProps) {
 		setInputValue(searchValue);
 
 		const filterItems = product.filter((elem) => {
-			return (
-				elem.name.toLowerCase().includes(searchValue.toLowerCase().trim())
-			);
+			return elem.name.toLowerCase().includes(searchValue.toLowerCase().trim());
 		});
 
 		searchValue.length === 0 ? setFilter(product) : setFilter(filterItems);
@@ -190,6 +289,9 @@ export function DashProvider({ children }: iDashContextProps) {
 			value={{
 				product,
 				isOpen,
+				isAdd,
+				isEdit,
+				isRemove,
 				profile,
 				filter,
 				inputValue,
@@ -197,6 +299,9 @@ export function DashProvider({ children }: iDashContextProps) {
 				screen,
 				openModal,
 				closeModal,
+				addContact,
+				editContact,
+				deleteContact,
 				filterProduct,
 				clearSearch,
 				openInputModal,

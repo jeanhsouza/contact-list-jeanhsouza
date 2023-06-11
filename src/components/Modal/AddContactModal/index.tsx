@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { useContext } from "react";
 import { AuthContext } from "../../../context/AuthContext";
 import { addModalSchema } from "./addModalSchema";
+import { DashContext } from "../../../context/DashContext";
 
 export interface iAddModalFormData {
 	name: string;
@@ -16,10 +17,11 @@ export interface iAddModalFormData {
 
 export function AddContactModal(){
     const { loading } = useContext(AuthContext);
+	const { closeModal, addContact } = useContext(DashContext);
 
     const {
 		register,
-		// handleSubmit,
+		handleSubmit,
 		formState: { errors },
 	} = useForm<iAddModalFormData>({
 		mode: "onBlur",
@@ -28,7 +30,11 @@ export function AddContactModal(){
 
     return(
         <StyledAddContactModal>
-            <Form submit={()=>0}>
+			<div>
+				<h2>Adicionar Contato</h2>
+				<span onClick={closeModal}>X</span>
+			</div>
+            <Form submit={handleSubmit(addContact)}>
 					<Input
 						label="Nome"
 						id="name"
@@ -53,7 +59,7 @@ export function AddContactModal(){
 						disabled={loading}
 					/>
 					{errors.fone?.message && <span>{errors.fone.message}</span>}					
-					<Button type="submit" buttonSize="medium" buttonStyle="solid1">
+					<Button type="submit" buttonSize="medium" buttonStyle="solid2">
 					{loading? "Adicionando..." : "Adicionar Contato"}
 					</Button>
 				</Form>
