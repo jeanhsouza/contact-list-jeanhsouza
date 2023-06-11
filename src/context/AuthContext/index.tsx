@@ -1,11 +1,10 @@
-import React, { createContext, useState, useEffect, useContext } from "react";
+import React, { createContext, useState, useEffect} from "react";
 import { SubmitHandler } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { iLoginFormData } from "../../pages/Login";
 import { iRegisterFormData } from "../../pages/Register";
 import { api } from "../../services/api";
 import { toast } from "react-toastify";
-import { DashContext } from "../DashContext";
 
 interface iAuthContextProps {
 	children: React.ReactNode;
@@ -24,7 +23,6 @@ export const AuthContext = createContext({} as iAuthContextValue);
 export function AuthProvider({ children }: iAuthContextProps) {
 	const [loading, setLoading] = useState(false);
 	const navigate = useNavigate();
-	const { removeAll } = useContext(DashContext);
 
 	useEffect(() => {
 		if (localStorage.getItem("@contactList:token")) {
@@ -94,7 +92,6 @@ export function AuthProvider({ children }: iAuthContextProps) {
 	}
 
 	function Logout() {
-		removeAll();
 		localStorage.clear();
 		navigate("/login");
 	}

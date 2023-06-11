@@ -9,7 +9,11 @@ import { StyledToastify } from "../../styles/toastify";
 import { StyledDashboard } from "./style";
 
 export function Dashboard() {
-	const { isOpen, inputValue } = useContext(DashContext);
+	const { isOpen, inputValue, profile, filter } = useContext(DashContext);
+
+	if (!profile) {
+		return;
+	}
 
 	return (
 		<StyledDashboard>
@@ -17,9 +21,26 @@ export function Dashboard() {
 			<StyledToastify autoClose={3000} />
 			<Header />
 			<ContainerMain>
+				<section className="sectionUser">
+					<div className="textUser">
+						<h2>
+							Seja bem-vindo,{" "}
+							{profile.name.charAt(0).toUpperCase() + profile.name.slice(1)}
+						</h2>
+						<span>Meu Email: {profile.email}</span>
+						<span>Meu número: {profile.fone}</span>
+					</div>
+				</section>
 				<section className="sectionProducts">
 					{inputValue?.trim().length !== 0 && <SearchContent />}
-					<ProductList />
+					{filter.length === 0 ? (
+						<div className="sectionEmpty">
+							<h2>Você não tem nenhum contato no momento =(</h2>
+							<span>Adicione um agora mesmo!</span>
+						</div>
+					) : (
+						<ProductList />
+					)}
 				</section>
 			</ContainerMain>
 		</StyledDashboard>

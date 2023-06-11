@@ -6,24 +6,19 @@ import {
 	UseFormRegister,
 } from "react-hook-form";
 import { api } from "../../services/api";
-import { toast } from "react-toastify";
+// import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
 
 interface iDashContextValues {
 	product: iProductItems[];
 	isOpen: boolean;
-	cart: iCartItems[];
+	profile: iProductItems;
 	filter: iProductItems[];
 	inputValue: string;
 	inputModal: boolean;
 	screen: number;
 	openModal: () => void;
 	closeModal: () => void;
-	addCart: (item: iProductItems) => void;
-	removeCart: (elem: iCartItems) => void;
-	removeItem: (elem: iCartItems) => void;
-	addItem: (elem: iCartItems) => void;
-	removeAll: () => void;
 	filterProduct: SubmitHandler<iInputSearchFormData>;
 	clearSearch: () => void;
 	openInputModal: () => void;
@@ -61,7 +56,7 @@ export const DashContext = createContext({} as iDashContextValues);
 export function DashProvider({ children }: iDashContextProps) {
 	const [product, setProduct] = useState<iProductItems[]>([]);
 	const [isOpen, setIsOpen] = useState(false);
-	const [cart, setCart] = useState<iCartItems[]>([]);
+	const [profile, setProfile] = useState<any>(null);
 	const [filter, setFilter] = useState<iProductItems[]>([]);
 	const [inputValue, setInputValue] = useState("");
 	const [inputModal, setInputModal] = useState(false);
@@ -79,8 +74,18 @@ export function DashProvider({ children }: iDashContextProps) {
 							Authorization: `Bearer ${token}`,
 						},
 					});
+
+					const requestUser = await api.get("users/profile", {
+						headers: {
+							Authorization: `Bearer ${token}`,
+						},
+					})					
+
 					const response = request.data;
 
+					const responseUser = requestUser.data;
+
+					setProfile(responseUser)
 					setProduct(response);
 					setFilter(response);
 				}
@@ -93,13 +98,13 @@ export function DashProvider({ children }: iDashContextProps) {
 		requestAPI();
 	}, [navigate]);
 
-	useEffect(() => {
-		if (cart.length > 0) {
-			setIsOpen(true);
-		} else {
-			setIsOpen(false);
-		}
-	}, [cart, setIsOpen]);
+	// useEffect(() => {
+	// 	if (cart.length > 0) {
+	// 		setIsOpen(true);
+	// 	} else {
+	// 		setIsOpen(false);
+	// 	}
+	// }, [cart, setIsOpen]);
 
 	useEffect(() => {
 		window.addEventListener("resize", () => {
@@ -119,71 +124,38 @@ export function DashProvider({ children }: iDashContextProps) {
 		setIsOpen(false);
 	}
 
-	function addCart(item: iProductItems) {
-		const cartContains = cart.find((elem: iCartItems) => {
-			return elem.id === item.id;
-		});
+	// function addCart(item: iProductItems) {
+	// 	const cartContains = cart.find((elem: iCartItems) => {
+	// 		return elem.id === item.id;
+	// 	});
 
-		if (cartContains) {
-			const updatedCart = cart.map((elem: iCartItems) =>
-				elem.id === item.id ? { ...elem, count: elem.count + 1 } : elem
-			);
-			toast.success("Produto adicionado ao carrinho!", {
-				position: toast.POSITION.TOP_LEFT,
-			});
-			setCart(updatedCart);
-		} else {
-			toast.success("Produto adicionado ao carrinho!", {
-				position: toast.POSITION.TOP_LEFT,
-			});
-			setCart((oldCart) => [...oldCart]);
-		}
-	}
+	// 	if (cartContains) {
+	// 		const updatedCart = cart.map((elem: iCartItems) =>
+	// 			elem.id === item.id ? { ...elem, count: elem.count + 1 } : elem
+	// 		);
+	// 		toast.success("Produto adicionado ao carrinho!", {
+	// 			position: toast.POSITION.TOP_LEFT,
+	// 		});
+	// 		setCart(updatedCart);
+	// 	} else {
+	// 		toast.success("Produto adicionado ao carrinho!", {
+	// 			position: toast.POSITION.TOP_LEFT,
+	// 		});
+	// 		setCart((oldCart) => [...oldCart]);
+	// 	}
+	// }
 
-	function removeCart(elem: iCartItems) {
-		const cardFilter = cart.filter((item) => {
-			return item !== elem;
-		});
+	// function removeCart(elem: iCartItems) {
+	// 	const cardFilter = cart.filter((item) => {
+	// 		return item !== elem;
+	// 	});
 
-		toast.success("Produto removido do carrinho", {
-			position: toast.POSITION.TOP_CENTER,
-		});
+	// 	toast.success("Produto removido do carrinho", {
+	// 		position: toast.POSITION.TOP_CENTER,
+	// 	});
 
-		setCart(cardFilter);
-	}
-
-	function removeItem(elem: iCartItems) {
-		const selectedItem = cart.find((item) => item.id === elem.id);
-
-		if (!selectedItem) {
-			return;
-		}
-
-		if (selectedItem.count <= 1) {
-			const updatedCart = cart.filter((item) => item.id !== elem.id);
-
-			setCart(updatedCart);
-		} else {
-			const updatedCart = cart.map((item) =>
-				item.id === elem.id ? { ...item, count: item.count - 1 } : item
-			);
-			setCart(updatedCart);
-		}
-	}
-
-	function addItem(elem: iCartItems) {
-		const updatedCart = cart.map((item) =>
-			item.id === elem.id ? { ...item, count: item.count + 1 } : item
-		);
-		setCart(updatedCart);
-	}
-
-	function removeAll() {
-		toast.success("Carrinho limpo com sucesso!", {
-			position: toast.POSITION.TOP_CENTER,
-		});
-		setCart([]);
-	}
+	// 	setCart(cardFilter);
+	// }	
 
 	const filterProduct: SubmitHandler<iInputSearchFormData> = (data) => {
 		const searchValue = data.inputSearchValue;
@@ -218,18 +190,13 @@ export function DashProvider({ children }: iDashContextProps) {
 			value={{
 				product,
 				isOpen,
-				cart,
+				profile,
 				filter,
 				inputValue,
 				inputModal,
 				screen,
 				openModal,
 				closeModal,
-				addCart,
-				removeCart,
-				removeItem,
-				addItem,
-				removeAll,
 				filterProduct,
 				clearSearch,
 				openInputModal,

@@ -1,11 +1,10 @@
-import { useContext } from "react";
 import { Button } from "../../Button";
 import { StyledLi } from "./styles";
 import "react-toastify/dist/ReactToastify.css";
-import { DashContext, iProductItems } from "../../../context/DashContext";
+import { iProductItems } from "../../../context/DashContext";
 
 export function Product({ elem }: { elem: iProductItems }) {
-	const { addCart } = useContext(DashContext);
+	// const { addCart } = useContext(DashContext);
 
 	return (
 		<StyledLi>
@@ -17,14 +16,14 @@ export function Product({ elem }: { elem: iProductItems }) {
 					<Button
 						buttonSize="medium"
 						buttonStyle="solid2"
-						click={() => addCart(elem)}
+						click={()=>0}
 					>
 						Editar
 					</Button>
 					<Button
 						buttonSize="medium"
 						buttonStyle="solid2"
-						click={() => addCart(elem)}
+						click={()=>0}
 					>
 						Remover
 					</Button>
